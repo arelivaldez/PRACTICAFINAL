@@ -49,8 +49,19 @@ equivalencia (f1 :<=>: f2) = (negacion (equivalencia f1) :|: equivalencia f2) :&
 -----------------------------------------------------
 
 -------------------- EJERCICIO 4 --------------------
-interpretacion :: Formula -> [(Var,Bool)] -> Bool
-interpretacion _ = undefined
+buscarVar :: Var -> [(Var, Bool)] -> Bool
+buscarVar var [] = error "No todas las variables estan definidas"
+buscarVar var ((v, val):xs) = if var == v
+                                then val
+                                else buscarVar var xs
+
+interpretacion :: Formula -> [(Var, Bool)] -> Bool
+interpretacion (Atom var) asignaciones = buscarVar var asignaciones
+interpretacion (Neg f) asignaciones = not (interpretacion f asignaciones)
+interpretacion (f1 :&: f2) asignaciones = interpretacion f1 asignaciones && interpretacion f2 asignaciones
+interpretacion (f1 :|: f2) asignaciones = interpretacion f1 asignaciones || interpretacion f2 asignaciones
+interpretacion (f1 :=>: f2) asignaciones = not (interpretacion f1 asignaciones) || interpretacion f2 asignaciones
+interpretacion (f1 :<=>: f2) asignaciones = interpretacion f1 asignaciones == interpretacion f2 asignaciones
 
 -----------------------------------------------------
 
@@ -81,12 +92,18 @@ combinaciones _ = undefined
 -----------------------------------------------------
 
 -------------------- EJERCICIO 6 --------------------
+--combinacionesInterp :: Formula -> [[(Var,Bool)]] -> [Bool]
+--combinacionesInterp fs [] = []
+--combinacionesInterp fs (x:xs) = [(interpretacion fs x)] ++ (combinacionesINterp fs xs)
 
-tablaDeVerdad :: Formula -> [([(Var,Bool)],Bool)]
-tablaDeVerdad _ = undefined
+--tablaDeVerdadAux :: [[(Var,Bool)]] -> [Bool] -> [([(Var,Bool)],Bool)]
+--tablaDeVerdadAux xs [] = []
+--tablaDeVerdadAux (x:xs) (y:ys) = (x,y) tabladeVerdadAux xs ys
+
+--tablaDeVerdad :: Formula -> [([(Var,Bool)],Bool)]
+--tablaDeVerdad _ = undefined
 
 
---tablaDeVerdadAux (x:xs) (y:ys) = (x,y)
 -----------------------------------------------------
 
 
