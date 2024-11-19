@@ -88,7 +88,10 @@ combinacionesAux :: Int  -> [[Bool]] -> [[Bool]]
 combinacionesAux 0 xs = xs
 combinacionesAux n xs = combinacionesAux (n-1) ((combina x False) ++ (combina xs True))
 
-longitu
+longitud :: [a] -> Int
+longitud [] = 0
+longitud (X:xs) = 1 - longitud xs
+
 
 -----------------------------------------------------
 
