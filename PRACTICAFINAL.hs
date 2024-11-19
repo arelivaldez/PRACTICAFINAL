@@ -70,13 +70,13 @@ combinaciones :: Formula -> [[(Var,Bool)]]
 combinaciones xs = asignarInterp (variables xs) (combinacionesAux (longitud (variables xs)) ([False],[True]))
 
 
---combina :: [a] -> a -> 
---combina [] b= []
---combina (x:xs) b = (b:x):(combina xs b)
+combina :: [a] -> a -> [[a]]
+combina [] b= []
+combina (x:xs) b = (b:x):(combina xs b)
 
---asignarvalor ::
---asignarvalor [] [] = []
---asignarvalor (x:xs) (y:ys) = (x,y) :(asignarvalor xs ys)
+asignarvalor :: [Var]->[Bool]->[(Var,Bool)]
+asignarvalor [] [] = []
+asignarvalor (x:xs) (y:ys) = (x,y) :(asignarvalor xs ys)
 
 asignarInterp :: [Var] -> [[Bool]]->[[(Var,Bool)]]
 asignarInterp xs [ ]= []
