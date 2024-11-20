@@ -63,38 +63,30 @@ interpretacion (f1 :|: f2) asignaciones = interpretacion f1 asignaciones || inte
 interpretacion (f1 :=>: f2) asignaciones = not (interpretacion f1 asignaciones) || interpretacion f2 asignaciones
 interpretacion (f1 :<=>: f2) asignaciones = interpretacion f1 asignaciones == interpretacion f2 asignaciones
 
------------------------------------------------------
 
 -------------------- EJERCICIO 5 --------------------
-combinaciones :: Formula -> [[(Var,Bool)]]
-combinaciones xs = asignarInterp (variables xs) (combinacionesAux (longitud (variables xs)) ([False],[True]))
-
-
-combina :: [a] -> Bool -> [[a]]
-combina [] _ = [[]]
-combina (x:xs) b = (b:x): combina xs b
-
-asignarvalor :: [Var]->[Bool]->[(Var,Bool)]
-asignarvalor [] [] = []
-asignarvalor (x:xs) (y:ys) = (x,y):(asignarvalor xs ys)
-
-asignarInterp :: [Var] -> [[Bool]]->[[(Var,Bool)]]
-asignarInterp xs []= []
-asignarInterp xs (y:ys) = ((asignarvalor xs y):(asignarInterp xs ys))
-
-
-
-combinacionesAux :: Int  -> [[Bool]] -> [[Bool]]
-combinacionesAux 0 xs = xs
-combinacionesAux n xs = combinacionesAux (n-1) ((combina x False) ++ (combina xs True))
 
 longitud :: [a] -> Int
 longitud [] = 0
-longitud (x:xs) = 1 + longitud xs
+longitud (_:xs) = 1 + longitud xs
 
+combina :: [[Bool]] -> [[Bool]]
+combina [] = []  
+combina (x:xs) = (False : x) : (True : x) : combina xs  
 
+asignarvalor :: [Var] -> [Bool] -> [(Var, Bool)]
+asignarvalor [] [] = []  
+asignarvalor (x:xs) (y:ys) = (x, y) : asignarvalor xs ys  
 
------------------------------------------------------
+asignarInterp :: [Var] -> [[Bool]] -> [[(Var, Bool)]]
+asignarInterp xs [] = []  
+asignarInterp xs (y:ys) = (asignarvalor xs y) : asignarInterp xs ys 
+combinacionesAux :: Int -> [[Bool]] -> [[Bool]]
+combinacionesAux 0 xs = xs  
+combinacionesAux n xs = combinacionesAux (n - 1) (combina xs)  
+
+combinaciones :: Formula -> [[(Var, Bool)]]
+combinaciones xs = asignarInterp (variables xs) (combinacionesAux (longitud (variables xs)) [[False], [True]])
 
 -------------------- EJERCICIO 6 --------------------
 --combinacionesInterp :: Formula -> [[(Var,Bool)]] -> [Bool]
@@ -110,5 +102,7 @@ longitud (x:xs) = 1 + longitud xs
 
 
 -----------------------------------------------------
+
+
 
 
