@@ -68,11 +68,12 @@ interpretacion (f1 :<=>: f2) asignaciones = interpretacion f1 asignaciones == in
 
 longitud :: [a] -> Int
 longitud [] = 0
-longitud (_:xs) = 1 + longitud xs
+longitud (x:xs) = 1 + longitud xs
 
-combina :: [[Bool]] -> [[Bool]]
-combina [] = []  
-combina (x:xs) = (False : x) : (True : x) : combina xs  
+
+combina :: [[Bool]] -> Bool -> [[Bool]]
+combina [] a = [] 
+combina (x:xs) a = (a : x) : combina xs a
 
 asignarvalor :: [Var] -> [Bool] -> [(Var, Bool)]
 asignarvalor [] [] = []  
@@ -80,10 +81,11 @@ asignarvalor (x:xs) (y:ys) = (x, y) : asignarvalor xs ys
 
 asignarInterp :: [Var] -> [[Bool]] -> [[(Var, Bool)]]
 asignarInterp xs [] = []  
-asignarInterp xs (y:ys) = (asignarvalor xs y) : asignarInterp xs ys 
+asignarInterp xs (y:ys) = ((asignarvalor xs y) : (asignarInterp xs ys) )
+
 combinacionesAux :: Int -> [[Bool]] -> [[Bool]]
-combinacionesAux 0 xs = xs  
-combinacionesAux n xs = combinacionesAux (n - 1) (combina xs)  
+combinacionesAux 0 (x:xs) = (x:xs)  
+combinacionesAux n (x:xs) = combina (x:xs) True ++ combina (x:xs) False
 
 combinaciones :: Formula -> [[(Var, Bool)]]
 combinaciones xs = asignarInterp (variables xs) (combinacionesAux (longitud (variables xs)) [[False], [True]])
