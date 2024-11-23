@@ -25,8 +25,6 @@ conjunto :: Eq a => [a] -> [a]
 conjunto [] = []
 conjunto (x:xs) = x : conjunto [y | y <- xs , y /= x ] 
 
------------------------------------------------------
-
 -------------------- EJERCICIO 2 --------------------
 negacion :: Formula -> Formula
 negacion (Atom var) = Neg (Atom var)
@@ -36,8 +34,6 @@ negacion (f1 :|: f2) = negacion f1 :&: negacion f2
 negacion (f1 :=>: f2) = f1 :&: negacion f2  
 negacion (f1 :<=>: f2) = (f1 :&: negacion f2) :|: (negacion f1 :&: f2)  
 
------------------------------------------------------
-
 -------------------- EJERCICIO 3 --------------------
 equivalencia :: Formula -> Formula
 equivalencia (Atom var) = (Atom var)
@@ -46,9 +42,9 @@ equivalencia (f1 :&: f2) = equivalencia f1 :&: equivalencia f2
 equivalencia (f1 :|: f2) =  equivalencia f1  :|: equivalencia f2  
 equivalencia (f1 :=>: f2) = negacion (equivalencia f1)  :|: equivalencia f2  
 equivalencia (f1 :<=>: f2) = (negacion (equivalencia f1) :|: equivalencia f2) :&: ( equivalencia f1 :|: negacion (equivalencia f2))  
------------------------------------------------------
 
 -------------------- EJERCICIO 4 --------------------
+
 buscarVar :: Var -> [(Var, Bool)] -> Bool
 buscarVar var [] = error "No todas las variables estan definidas"
 buscarVar var ((v, val):xs) = if var == v
@@ -62,7 +58,6 @@ interpretacion (f1 :&: f2) asignaciones = interpretacion f1 asignaciones && inte
 interpretacion (f1 :|: f2) asignaciones = interpretacion f1 asignaciones || interpretacion f2 asignaciones
 interpretacion (f1 :=>: f2) asignaciones = not (interpretacion f1 asignaciones) || interpretacion f2 asignaciones
 interpretacion (f1 :<=>: f2) asignaciones = interpretacion f1 asignaciones == interpretacion f2 asignaciones
-
 
 -------------------- EJERCICIO 5 --------------------
 
@@ -85,26 +80,16 @@ asignarInterp xs (y:ys) = ((asignarvalor xs y) : (asignarInterp xs ys) )
 
 combinacionesAux :: Int -> [[Bool]] -> [[Bool]]
 combinacionesAux 0 (x:xs) = (x:xs)  
-combinacionesAux n (x:xs) = combina (x:xs) True ++ combina (x:xs) False
+combinacionesAux n (x:xs) = combinacionesAux (n-1) (combina (x:xs) True ++ combina (x:xs) False) 
 
 combinaciones :: Formula -> [[(Var, Bool)]]
-combinaciones xs = asignarInterp (variables xs) (combinacionesAux (longitud (variables xs)) [[False], [True]])
+combinaciones xs = asignarInterp (variables xs) (combinacionesAux (longitud (variables xs)-1) [[False], [True]])
 
 -------------------- EJERCICIO 6 --------------------
---combinacionesInterp :: Formula -> [[(Var,Bool)]] -> [Bool]
---combinacionesInterp fs [] = []
---combinacionesInterp fs (x:xs) = [(interpretacion fs x)] ++ (combinacionesINterp fs xs)
 
---tablaDeVerdadAux :: [[(Var,Bool)]] -> [Bool] -> [([(Var,Bool)],Bool)]
---tablaDeVerdadAux xs [] = []
---tablaDeVerdadAux (x:xs) (y:ys) = (x,y) tabladeVerdadAux xs ys
+tablaDeVerdad :: Formula -> [([(Var,Bool)],Bool)]
+tablaDeVerdad formula = tablaDeVerdadAux formula (combinaciones formula)
 
---tablaDeVerdad :: Formula -> [([(Var,Bool)],Bool)]
---tablaDeVerdad _ = undefined
-
-
------------------------------------------------------
-
-
-
-
+tablaDeVerdadAux :: Formula ->[[(Var,Bool)]] -> [([(Var,Bool)],Bool)]
+tablaDeVerdadAux formula [] = []
+tablaDeVerdadAux formula (x:xs) = (x,interpretacion formula x):(tablaDeVerdadAux formula xs) 
